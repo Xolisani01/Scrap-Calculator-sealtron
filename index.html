@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wire Extrusion Scrap Calculator</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif}
+body{background:linear-gradient(135deg,#0f172a,#1e3a8a);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px}
+.container{width:100%;max-width:900px;background:#fff;border-radius:20px;padding:30px;box-shadow:0 10px 25px rgba(0,0,0,.3)}
+h1{text-align:center;color:#1e3a8a;margin-bottom:25px}.info-box{background:#eef4ff;padding:15px;border-left:5px solid #1e3a8a;margin-bottom:25px;border-radius:8px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.input-group{display:flex;flex-direction:column}
+label{margin-bottom:6px;font-weight:600}input{padding:12px;border:1px solid #ccc;border-radius:8px}
+button{width:100%;margin-top:25px;padding:15px;border:none;border-radius:10px;background:#1e3a8a;color:#fff;font-size:18px;cursor:pointer}
+button:hover{background:#0f2664}.results{margin-top:25px;display:none}.card{background:#f8fafc;padding:15px;margin-bottom:12px;border-radius:10px;border-left:5px solid #2563eb}.value{font-size:22px;font-weight:bold;color:#1e3a8a}
+@media(max-width:700px){.form-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<center><img src=https://sealtron.co.za/wp-content/uploads/2024/07/Background-8.png wiegth=100pc, height=80px></center>
+<h1>WIRE EXTRUSION SCRAP CALCULATOR</h1>
+<div class="info-box"><strong>Process Constant:</strong><br>25 kg PVC + 0.75 kg Colour = 5000 m Extruded Wire</div>
+<div class="form-grid">
+<div class="input-group"><label>Wire Length Produced (Meters)</label><input type="number" id="length"></div>
+<div class="input-group"><label>PVC Loaded / Issued (kg)</label><input type="number" id="pvcLoaded"></div>
+<div class="input-group"><label>PVC Remaining (kg)</label><input type="number" id="pvcRemaining"></div>
+<div class="input-group"><label>Plurge Out PVC / Lost PVC With Colour (kg)</label><input type="number" id="plurgePVC"></div>
+<div class="input-group"><label>Shine Wire Weight (kg)</label><input type="number" id="shine"></div>
+<div class="input-group"><label>Insulated Wire Weight (kg)</label><input type="number" id="insulated"></div>
+</div>
+<button onclick="calculateScrap()">Calculate Scrap</button>
+<div class="results" id="results">
+<div class="card">PVC Used<div class="value" id="pvcUsedResult"></div></div>
+<div class="card">Expected PVC Consumption<div class="value" id="expectedPVC"></div></div>
+<div class="card">Expected Colour Consumption<div class="value" id="expectedColour"></div></div>
+<div class="card">Plurge Out PVC / Lost PVC<div class="value" id="plurgeResult"></div></div>
+<div class="card">PVC Scrap / Loss<div class="value" id="scrapKg"></div></div>
+<div class="card">Scrap Percentage<div class="value" id="scrapPercent"></div></div>
+<div class="card">Yield Percentage<div class="value" id="yieldPercent"></div></div>
+<div class="card">Material Conversion Efficiency<div class="value" id="efficiency"></div></div>
+</div></div>
+<script>
+function calculateScrap(){
+let length=parseFloat(document.getElementById('length').value)||0;
+let pvcLoaded=parseFloat(document.getElementById('pvcLoaded').value)||0;
+let pvcRemaining=parseFloat(document.getElementById('pvcRemaining').value)||0;
+let plurgePVC=parseFloat(document.getElementById('plurgePVC').value)||0;
+let shine=parseFloat(document.getElementById('shine').value)||0;
+let insulated=parseFloat(document.getElementById('insulated').value)||0;
+let pvcUsed=pvcLoaded-pvcRemaining;
+if(pvcUsed<0){alert('Remaining PVC cannot be greater than Loaded PVC');return;}
+const pvcPerMeter=25/5000; const colourPerMeter=0.75/5000;
+let expectedPVC=length*pvcPerMeter;
+let expectedColour=length*colourPerMeter;
+let totalScrap=Math.max(0,(pvcUsed-expectedPVC)+plurgePVC);
+let scrapPercent=pvcUsed>0?(totalScrap/pvcUsed)*100:0;
+let yieldPercent=pvcUsed>0?(expectedPVC/pvcUsed)*100:0;
+let efficiency=shine>0?(insulated/shine)*100:0;
+document.getElementById('results').style.display='block';
+document.getElementById('pvcUsedResult').innerHTML=pvcUsed.toFixed(3)+' kg';
+document.getElementById('expectedPVC').innerHTML=expectedPVC.toFixed(3)+' kg';
+document.getElementById('expectedColour').innerHTML=expectedColour.toFixed(3)+' kg';
+document.getElementById('plurgeResult').innerHTML=plurgePVC.toFixed(3)+' kg';
+document.getElementById('scrapKg').innerHTML=totalScrap.toFixed(3)+' kg';
+document.getElementById('scrapPercent').innerHTML=scrapPercent.toFixed(2)+' %';
+document.getElementById('yieldPercent').innerHTML=yieldPercent.toFixed(2)+' %';
+document.getElementById('efficiency').innerHTML=efficiency.toFixed(2)+' %';
+const scrap=document.getElementById('scrapKg');
+if(scrapPercent<=2){scrap.style.color='green';}
+else if(scrapPercent<=5){scrap.style.color='orange';}
+else{scrap.style.color='red';}
+}
+</script>
+</body>
+</html>
